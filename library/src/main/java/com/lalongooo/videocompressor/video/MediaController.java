@@ -92,7 +92,7 @@ public class MediaController {
             this.videoPath = videoPath;
         }
 
-        public static void runConversion(final String videoPath) {
+        public static void runConversion(final String videoPath, final String newPath) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -137,12 +137,12 @@ public class MediaController {
         return lastCodecInfo;
     }
 
-    public void scheduleVideoConvert(String path) {
-        startVideoConvertFromQueue(path);
+    public void scheduleVideoConvert(String path, String newPath) {
+        startVideoConvertFromQueue(path, newPath);
     }
 
-    private void startVideoConvertFromQueue(String path) {
-        VideoConvertRunnable.runConversion(path);
+    private void startVideoConvertFromQueue(String path, String newPath) {
+        VideoConvertRunnable.runConversion(path, newPath);
     }
 
     @TargetApi(16)
@@ -223,6 +223,11 @@ public class MediaController {
 
     @TargetApi(16)
     public boolean convertVideo(final String path) {
+        return convertVideo(path, getFilename());
+    }
+
+    @TargetApi(16)
+    public boolean convertVideo(final String path, final String newPath) {
 
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(path);
@@ -243,13 +248,7 @@ public class MediaController {
         int bitrate = 450000;
         int rotateRender = 0;
 
-        File cacheFile = new File(
-                Environment.getExternalStorageDirectory()
-                        + File.separator
-                        + Config.VIDEO_COMPRESSOR_APPLICATION_DIR_NAME
-                        + Config.VIDEO_COMPRESSOR_COMPRESSED_VIDEOS_DIR,
-                "VIDEO_" + new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()) + ".mp4"
-        );
+        File cacheFile = new File(newPath);
 
         if (Build.VERSION.SDK_INT < 18 && resultHeight > resultWidth && resultWidth != originalWidth && resultHeight != originalHeight) {
             int temp = resultHeight;
@@ -668,5 +667,20 @@ public class MediaController {
 
         inputFile.delete();
         return true;
+    }
+
+    private String getFilename() {
+        return getDefaultFolder() + File.separator + getDefaultFilename();
+    }
+
+    private String getDefaultFilename() {
+        return "VIDEO_" + new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()) + ".mp4";
+    }
+
+    private String getDefaultFolder() {
+        return Environment.getExternalStorageDirectory()
+                        + File.separator
+                        + Config.VIDEO_COMPRESSOR_APPLICATION_DIR_NAME
+                        + Config.VIDEO_COMPRESSOR_COMPRESSED_VIDEOS_DIR;
     }
 }
