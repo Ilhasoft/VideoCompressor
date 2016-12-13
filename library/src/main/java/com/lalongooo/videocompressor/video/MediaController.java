@@ -241,9 +241,9 @@ public class MediaController {
         int resultWidth = 640;
         int resultHeight = 360;
 
-        int rotationValue = Integer.valueOf(rotation);
-        int originalWidth = Integer.valueOf(width);
-        int originalHeight = Integer.valueOf(height);
+        int rotationValue = rotation != null ? Integer.valueOf(rotation) : 90;
+        int originalWidth = width != null ? Integer.valueOf(width) : 0;
+        int originalHeight = height != null ? Integer.valueOf(height) : 0;
 
         int bitrate = 450000;
         int rotateRender = 0;
